@@ -2,7 +2,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class HomeWorkApp {
-    public static Scanner sc = new Scanner(System.in);
+//    public static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
 
@@ -12,13 +12,14 @@ public class HomeWorkApp {
         exercise4();
         exercise5();
 
-        sc.close();
     }
 
     /*1. Написать метод, принимающий на вход два целых числа и проверяющий, что их сумма лежит в пределах от 10 до 20
      (включительно), если да – вернуть true, в противном случае – false.
      */
     static void exercise1() {
+        Scanner sc = new Scanner(System.in);
+
         System.out.println("Введите число a:");
         int a = sc.nextInt();
         System.out.println("Введите число b:");
@@ -42,6 +43,8 @@ public class HomeWorkApp {
     положительное ли число передали или отрицательное. Замечание: ноль считаем положительным числом.
      */
     static void exercise2() {
+        Scanner sc = new Scanner(System.in);
+
         System.out.println("Введите целое число:");
         int a = sc.nextInt();
 
@@ -63,6 +66,8 @@ public class HomeWorkApp {
     отрицательное, и вернуть false если положительное.
      */
     static void exercise3() {
+        Scanner sc = new Scanner(System.in);
+
         System.out.println("Введите целое число:");
         int a = sc.nextInt();
 
@@ -80,9 +85,10 @@ public class HomeWorkApp {
     указанную строку, указанное количество раз;
      */
     static void exercise4() {
+        Scanner sc = new Scanner(System.in);
+
         System.out.println("Введите не пустую строку:");
         String str = sc.nextLine();
-        str = sc.nextLine();
 
         Random rd = new Random();
 
@@ -101,6 +107,8 @@ public class HomeWorkApp {
     не високосный - false). Каждый 4-й год является високосным, кроме каждого 100-го, при этом каждый 400-й – високосный.
      */
     static void exercise5() {
+        Scanner sc = new Scanner(System.in);
+
         System.out.println("Введите год в формате YYYY:");
         int year = sc.nextInt();
 
