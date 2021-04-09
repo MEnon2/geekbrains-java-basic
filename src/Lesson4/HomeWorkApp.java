@@ -144,7 +144,14 @@ public class HomeWorkApp {
     }
 
     static void printMap(char[][] map) {
+        out.print("   ");
         for (int i = 0; i < size; i++) {
+            out.print(i + 1 + " ");
+        }
+        out.println();
+
+        for (int i = 0; i < size; i++) {
+            out.print(i + 1 + "  ");
             for (int j = 0; j < size; j++) {
                 out.print(map[i][j] + " ");
             }
