@@ -26,7 +26,7 @@ public class HomeWorkApp {
         out.println("Начинаем игру!");
         char[][] map = initializeMap();
 
-        result = new int[4];
+        result = new int[5];
 
         out.println("Общее количество игроков: " + countPlayer);
 
@@ -48,22 +48,21 @@ public class HomeWorkApp {
             int player = 1;
             do {
                 doPlayerMove(map, player);
+                calculateCountSign(map);
                 stopGame = isDraw(map) || isWin(map, player);
                 player++;
             } while (player <= countPeople && !stopGame);
 
             while (player <= countPlayer && !stopGame) {
                 doAIMove(map, player);
+                calculateCountSign(map);
                 stopGame = isDraw(map) || isWin(map, player);
                 player++;
             }
-
             if (stopGame) {
                 break;
             }
-
         } while (true);
-
     }
 
     static char[][] initializeMap() {
@@ -79,15 +78,46 @@ public class HomeWorkApp {
 
     static void doAIMove(char[][] map, int player) {
         out.printf("Ход игрока %s (компьютер)%n", player);
-        int row, col;
-        Random rd = new Random();
-        do {
-            row = rd.nextInt(size);
-            col = rd.nextInt(size);
-        } while (!isSign(map, row, col, charEmpty));
+        int row = 0, col = 0;
+
+        if (result[0] == 0) {
+            row = result[1];
+            for (int i = 0; i < size; i++) {
+                if (isSign(map, row, i + result[2], charEmpty)) {
+                    col = i + result[2];
+                    break;
+                }
+            }
+        } else if (result[0] == 1) {
+            col = result[1];
+            for (int i = 0; i < size; i++) {
+                if (isSign(map, i + result[2], col, charEmpty)) {
+                    row = i + result[2];
+                    break;
+                }
+            }
+        } else if (result[0] == 2) {
+            for (int i = 0; i < countForWin; i++) {
+                if (isSign(map, i + result[1], i + result[2], charEmpty)) {
+                    row = i + result[1];
+                    col = i + result[2];
+                    break;
+                }
+            }
+        } else if (result[0] == 3) {
+            for (int i = 0; i < countForWin; i++) {
+                if (isSign(map, i + result[1], size - 1 - (i + result[2]), charEmpty)) {
+                    row = i + result[1];
+                    col = size - 1 - (i + result[2]);
+                    break;
+                }
+            }
+
+        }
 
         map[row][col] = charsPlayers[player - 1];
         printMap(map);
+
     }
 
     static void doPlayerMove(char[][] map, int player) {
@@ -140,11 +170,7 @@ public class HomeWorkApp {
     }
 
     static boolean isWin(char[][] map, int player) {
-
-
-        calculateCountSign(map);
-
-        if (result[2] == countForWin) {
+        if (result[3] == countForWin) {
             out.printf("Выиграл игрок <%s>%n", player);
             return true;
         }
@@ -152,115 +178,158 @@ public class HomeWorkApp {
         return false;
     }
 
-    static boolean checkWin(int countWinHorizontally, int countWinVertical, int countWinDiagonally, int countWinOppositeDiagonally) {
-        return countWinHorizontally == countForWin || countWinVertical == countForWin || countWinDiagonally == countForWin || countWinOppositeDiagonally == countForWin;
-    }
-
     static void calculateCountSign(char[][] map) {
-
-
-        int countWinHorizontally = 0, countWinVertical = 0, countWinDiagonally = 0, countWinOppositeDiagonally = 0, countCharEmpty = 0;
-
-        int typeMax = 0; //[0 - горизонтальный, 1 - вертикальный, 2 - диаганаль, 3 - обратная диаганаль]
-        int max = 0, numberRowCol = 0, player = 0;
+        result = new int[5];
+        int[] resultСomparison = new int[5];
 
         for (int k = 0; k < charsPlayers.length; k++) {
-            char sign = charsPlayers[k];
+            resultСomparison = checkHorizontallyVertical(map, 0, k + 1);
+            if (resultСomparison[3] > result[3]) {
+                result = resultСomparison;
+            }
+            resultСomparison = checkHorizontallyVertical(map, 1, k + 1);
+            if (resultСomparison[3] > result[3]) {
+                result = resultСomparison;
+            }
+            resultСomparison = checkDiagonally(map, 2, k + 1);
+            if (resultСomparison[3] > result[3]) {
+                result = resultСomparison;
+            }
+            resultСomparison = checkDiagonally(map, 3, k + 1);
+            if (resultСomparison[3] > result[3]) {
+                result = resultСomparison;
+            }
+        }
+    }
 
-            for (int i = 0; i < size; i++) {
-                for (int s = 0; s < 2; s++) {
-                    countWinHorizontally = 0;
-                    countCharEmpty = 0;
-                    for (int j = 0; j < countForWin; j++) {
-                        if (isSign(map, i, j + s, sign)) {
-                            countWinHorizontally++;
-                        } else if (isSign(map, i, j + s, charEmpty)) {
+    static int[] checkDiagonally(char[][] arr, int typeMax, int player) {
+        int max = 0, countCharPlayer = 0, countCharEmpty = 0;
+        char sign = charsPlayers[player - 1];
+        int[] resultСomparison = new int[5];
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                countCharPlayer = 0;
+                countCharEmpty = 0;
+                for (int s = 0; s < countForWin; s++) {
+                    if (typeMax == 2 && s + i < size && s + j < size) {
+                        if (isSign(arr, s + i, s + j, sign)) {
+                            countCharPlayer++;
+                        } else if (isSign(arr, s + i, s + j, charEmpty)) {
                             countCharEmpty++;
                         } else {
                             break;
                         }
                     }
 
-                    if (countWinHorizontally > max && countWinHorizontally > 0 && countWinHorizontally + countCharEmpty == countForWin) {
-                        max = countWinHorizontally;
-                        typeMax = 0;
-                        numberRowCol = i;
-                        player = k + 1;
-                    }
-
-                }
-            }
-
-            for (int i = 0; i < size; i++) {
-                for (int s = 0; s < 2; s++) {
-                    countWinVertical = 0;
-                    countCharEmpty = 0;
-                    for (int j = 0; j < countForWin; j++) {
-                        if (isSign(map, j + s, i, sign)) {
-                            countWinVertical++;
-                        } else if (isSign(map, j + s, i, charEmpty)) {
+                    if (typeMax == 3 && s + i < size && s + j < size) {
+                        if (isSign(arr, s + i, size - 1 - (s + j), sign)) {
+                            countCharPlayer++;
+                        } else if (isSign(arr, s + i, size - 1 - (s + j), charEmpty)) {
                             countCharEmpty++;
                         } else {
                             break;
                         }
                     }
-                    if (countWinVertical > max && countWinVertical > 0 && countWinVertical + countCharEmpty == countForWin) {
-                        max = countWinVertical;
-                        typeMax = 1;
-                        numberRowCol = i;
-                        player = k + 1;
-                    }
+
+                }
+
+                if (countCharPlayer > max && countCharPlayer > 0 && countCharPlayer + countCharEmpty == countForWin) {
+                    max = countCharPlayer;
+                    resultСomparison[0] = typeMax;
+                    resultСomparison[1] = i;
+                    resultСomparison[2] = j;
+                    resultСomparison[3] = max;
+                    resultСomparison[4] = player;
                 }
             }
-
-            for (int s = 0; s < 2; s++) {
-                countWinDiagonally = 0;
-                countCharEmpty = 0;
-
-                for (int i = 0; i < countForWin; i++) {
-                    if (isSign(map, i + s, i, sign)) {
-                        countWinDiagonally++;
-                    } else if (isSign(map, i + s, i, charEmpty)) {
-                        countCharEmpty++;
-                    } else {
-                        break;
-                    }
-                }
-                if (countWinDiagonally > max && countWinDiagonally > 0 && countWinDiagonally + countCharEmpty == countForWin) {
-                    max = countWinDiagonally;
-                    typeMax = 2;
-                    numberRowCol = 0;
-                    player = k + 1;
-                }
-
-                countWinOppositeDiagonally = 0;
-                countCharEmpty = 0;
-
-                for (int i = 0; i < countForWin; i++) {
-                    if (isSign(map,i + s , size - 1 - i, sign)) {
-                        countWinOppositeDiagonally++;
-                    } else if (isSign(map,i + s , size - 1 - i, charEmpty)) {
-                        countCharEmpty++;
-                    } else {
-                        break;
-                    }
-                }
-                if (countWinOppositeDiagonally > max && countWinOppositeDiagonally > 0 && countWinOppositeDiagonally + countCharEmpty == countForWin) {
-                    max = countWinOppositeDiagonally;
-                    typeMax = 3;
-                    numberRowCol = 0;
-                    player = k + 1;
-                }
-
-            }
-
         }
 
-        result[0] = typeMax;
-        result[1] = numberRowCol;
-        result[2] = max;
-        result[3] = player;
 
+/*
+        for (int s = 0; s < 2; s++) {
+            countCharPlayer = 0;
+            countCharEmpty = 0;
+
+            for (int i = 0; i < countForWin; i++) {
+                if (typeMax == 2) {
+                    if (isSign(arr, i + s, i + s, sign)) {
+                        countCharPlayer++;
+                    } else if (isSign(arr, i + s, i + s, charEmpty)) {
+                        countCharEmpty++;
+                    } else {
+                        break;
+                    }
+                }
+                if (typeMax == 3) {
+                    if (isSign(arr, i + s, size - 1 - i - s, sign)) {
+                        countCharPlayer++;
+                    } else if (isSign(arr, i + s, size - 1 - i - s, charEmpty)) {
+                        countCharEmpty++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            if (countCharPlayer > max && countCharPlayer > 0 && countCharPlayer + countCharEmpty == countForWin) {
+                max = countCharPlayer;
+                resultСomparison[0] = typeMax;
+                resultСomparison[1] = 0;
+                resultСomparison[3] = max;
+                resultСomparison[4] = player;
+            }
+        }
+*/
+        return resultСomparison;
     }
+
+    static int[] checkHorizontallyVertical(char[][] arr, int typeMax, int player) {
+        int max = 0;
+        int countCharPlayer = 0, countCharEmpty = 0;
+        char sign = charsPlayers[player - 1];
+        int[] resultСomparison = new int[5];
+
+        for (int i = 0; i < size; i++) {
+            for (int s = 0; s < 2; s++) {
+                countCharPlayer = 0;
+                countCharEmpty = 0;
+
+                for (int j = 0; j < countForWin; j++) {
+                    if (typeMax == 0) {
+                        if (isSign(arr, i, j + s, sign)) {
+                            countCharPlayer++;
+                        } else if (isSign(arr, i, j + s, charEmpty)) {
+                            countCharEmpty++;
+                        } else {
+                            break;
+                        }
+                    } else if (typeMax == 1) {
+                        if (isSign(arr, j + s, i, sign)) {
+                            countCharPlayer++;
+                        } else if (isSign(arr, j + s, i, charEmpty)) {
+                            countCharEmpty++;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+
+                if (countCharPlayer > max && countCharPlayer > 0 && countCharPlayer + countCharEmpty == countForWin) {
+                    max = countCharPlayer;
+                    resultСomparison[0] = typeMax;
+                    resultСomparison[1] = i;
+                    resultСomparison[2] = s;
+                    resultСomparison[3] = max;
+                    resultСomparison[4] = player;
+                }
+
+            }
+        }
+
+
+        return resultСomparison;
+    }
+
 }
 
