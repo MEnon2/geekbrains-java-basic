@@ -7,10 +7,6 @@ public class Person {
     private int wage;
     private int age;
 
-    public static void main(String[] args) {
-
-    }
-
     public Person(String name, String post, String email, String phone, int wage, int age) {
         this.name = name;
         this.post = post;
