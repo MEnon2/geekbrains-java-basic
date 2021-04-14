@@ -1,6 +1,9 @@
 package lesson6;
 
 public class dog extends animals{
-    public dog() {
+
+    @Override
+    public void move(int length) {
+        System.out.println("Собака Побежал");
     }
 }
