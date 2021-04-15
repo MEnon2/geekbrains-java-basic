@@ -2,15 +2,27 @@ package lesson6;
 
 public abstract class animals {
 
-    private int countAnimals = 0;
+    public int countAnimals = 0;
     private String name;
+    private int maxLengthRun;
+    private int maxLengthSwim;
 
-    public animals() {
-        this.countAnimals++;
+    public animals(String name, int maxLengthRun, int maxLengthSwim) {
+        this.name = name;
+        this.maxLengthRun = maxLengthRun;
+        this.maxLengthSwim = maxLengthSwim;
     }
 
-    public int getCountAnimals() {
-        return countAnimals;
+     public String getName() {
+        return this.name;
+    }
+
+    public int getMaxLengthRun() {
+        return this.maxLengthRun;
+    }
+
+    public int getMaxLengthSwim() {
+        return this.maxLengthSwim;
     }
 
     public abstract void run(int length);
