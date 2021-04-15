@@ -13,7 +13,7 @@ public abstract class animals {
         return countAnimals;
     }
 
-    public void move(int length) {
+    public abstract void run(int length);
+    public abstract void swim(int length);
 
-    }
 }
